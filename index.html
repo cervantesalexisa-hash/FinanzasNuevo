@@ -46,10 +46,17 @@
     --radius: 16px;
     --radius-sm: 10px;
     --shadow: 0 1px 3px rgba(0,0,0,0.06);
+    --shadow-md: 0 4px 16px -4px rgba(16,32,64,.12), 0 2px 6px -2px rgba(16,32,64,.08);
+    --shadow-lg: 0 12px 32px -8px rgba(16,32,64,.18), 0 4px 12px -4px rgba(16,32,64,.10);
+    --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+    --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
     --nav-h: 80px;
     --safe-bottom: env(safe-area-inset-bottom, 0px);
   }
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  /* Scrollbar oculto en toda la app (sin barra visible) */
+  * { scrollbar-width: none; -ms-overflow-style: none; }
+  *::-webkit-scrollbar { width: 0; height: 0; display: none; }
   html, body, #root { height: 100%; overflow: hidden; }
   body {
     font-family: -apple-system, 'SF Pro Display', 'SF Pro Text', BlinkMacSystemFont, system-ui, sans-serif;
@@ -115,35 +122,67 @@
   /* ===== LAYOUT PC ===== */
   .app-root { display: flex; flex-direction: column; height: 100%; }
   .side { display: none; }
-  .side-brand { font-size: 22px; font-weight: 700; letter-spacing: -.4px; padding: 6px 14px 22px; color: var(--blue); }
+  .side-brand {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 19px; font-weight: 700; letter-spacing: -.3px; color: var(--text);
+    padding: 2px 14px 6px;
+  }
+  .side-brand::before {
+    content: ''; width: 28px; height: 28px; border-radius: 9px; flex-shrink: 0;
+    background: linear-gradient(145deg, #2f80ed, #0a3a86);
+    box-shadow: 0 3px 10px -3px rgba(10,58,134,.55), inset 0 1px 0 rgba(255,255,255,.25);
+  }
+  .side-eyebrow {
+    font-size: 10.5px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+    color: var(--text3); padding: 18px 18px 8px;
+  }
   .side-btn {
     display: flex; align-items: center; text-align: left; background: none; border: none; cursor: pointer;
-    font-size: 15px; font-weight: 600; color: var(--text2);
-    padding: 12px 16px; border-radius: 12px; position: relative; transition: background .15s, color .15s;
+    font-size: 14.5px; font-weight: 550; color: var(--text2);
+    padding: 11px 16px; border-radius: 11px; position: relative;
+    transition: background .18s var(--ease-out), color .18s var(--ease-out), transform .12s var(--ease-out);
   }
-  .side-btn:hover { background: rgba(31,111,235,.06); }
+  .side-btn:hover { background: rgba(16,32,64,.045); color: var(--text); }
+  .side-btn:active { transform: scale(.98); }
   .side-btn.active { background: rgba(31,111,235,.10); color: var(--blue-mid); font-weight: 700; }
   .side-btn.active::before {
-    content: ''; position: absolute; left: 2px; top: 50%; transform: translateY(-50%);
-    width: 3px; height: 20px; border-radius: 2px; background: var(--blue-mid);
+    content: ''; position: absolute; left: 3px; top: 50%; transform: translateY(-50%);
+    width: 3px; height: 18px; border-radius: 2px; background: var(--blue-mid);
   }
   @media (min-width: 900px) {
     html, body, #root { overflow: hidden; }
+    body { background: #eceef2; }
     #root { max-width: 100%; }
     .app-root { flex-direction: row; }
     .side {
-      display: flex; flex-direction: column; gap: 4px;
-      width: 250px; flex-shrink: 0; height: 100%;
-      border-right: 1px solid var(--sep); padding: 30px 16px;
-      background: rgba(255,255,255,.55);
-      backdrop-filter: blur(20px) saturate(160%); -webkit-backdrop-filter: blur(20px) saturate(160%);
+      display: flex; flex-direction: column; gap: 2px;
+      width: 264px; flex-shrink: 0; height: 100%;
+      border-right: 1px solid rgba(16,32,64,.07); padding: 30px 14px;
+      background: rgba(255,255,255,.72);
+      backdrop-filter: blur(24px) saturate(160%); -webkit-backdrop-filter: blur(24px) saturate(160%);
     }
-    .app-stack { flex: 1; max-width: 860px; margin: 0 auto; width: 100%; }
+    .app-stack { flex: 1; width: 100%; background: var(--bg); }
     .bottom-nav { display: none; }
-    .screen-view { padding-bottom: 48px; }
-    .screen-header { padding: 38px 24px 10px; }
-    .detail-header { padding: 34px 16px 12px; }
+    .screen-view {
+      padding-left: max(36px, calc((100% - 772px) / 2));
+      padding-right: max(36px, calc((100% - 772px) / 2));
+      padding-bottom: 60px;
+    }
+    .screen-header { padding: 46px 16px 16px; }
+    .screen-title { font-size: 30px; letter-spacing: -.6px; }
+    .detail-header { padding: 38px 16px 14px; }
+    .card-list-item {
+      border: 1px solid rgba(16,32,64,.06);
+      box-shadow: var(--shadow-md);
+      transition: transform .22s var(--ease-out), box-shadow .22s var(--ease-out);
+    }
+    .card-list-item:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
   }
+  @media (hover: hover) and (pointer: fine) {
+    .btn-primary, .btn-secondary, .head-add { transition: transform .14s var(--ease-out), filter .14s var(--ease-out), background .15s var(--ease-out); }
+    .btn-primary:hover, .head-add:hover { filter: brightness(1.06); }
+  }
+  .btn-primary:active, .btn-secondary:active { transform: scale(.97); }
 
   /* Header add button */
   .head-add {
@@ -1984,6 +2023,7 @@ function App() {
     <div className="app-root">
       <aside className="side">
         <div className="side-brand">Finanzas</div>
+        <div className="side-eyebrow">Menú</div>
         <button className={`side-btn ${tab==='home'?'active':''}`} onClick={()=>{setTab('home');setDetail(null);}}>Inicio</button>
         <button className={`side-btn ${tab==='cards'?'active':''}`} onClick={()=>{setTab('cards');setDetail(null);}}>Tarjetas</button>
         <button className={`side-btn ${tab==='commits'?'active':''}`} onClick={()=>{setTab('commits');setDetail(null);}}>Pagos</button>
